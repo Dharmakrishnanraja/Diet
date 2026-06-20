@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#1a2e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Diet Daily — உடல் ஆரோக்கிய கண்காணிப்பு</title>
+<style>
+  :root {
+    --saffron: #E8871A;
+    --saffron-light: #FDF0DF;
+    --saffron-deep: #B5620A;
+    --forest: #1C3A1C;
+    --forest-mid: #2D5A2D;
+    --forest-light: #4A8C4A;
+    --leaf: #6DB86D;
+    --cream: #FAF6F0;
+    --cream-deep: #F2EAE0;
+    --terracotta: #C4522A;
+    --gold: #D4A017;
+    --gold-light: #FBF3DC;
+    --white: #FFFFFF;
+    --text-dark: #1A1A1A;
+    --text-mid: #4A4A4A;
+    --text-light: #7A7A7A;
+    --border: rgba(30,60,30,0.12);
+    --shadow: 0 4px 24px rgba(28,58,28,0.10);
+    --shadow-lg: 0 12px 48px rgba(28,58,28,0.18);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --radius-xl: 28px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Segoe UI', 'Noto Sans Tamil', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── SPLASH / ONBOARD ── */
+  #splash {
+    position: fixed; inset: 0; z-index: 999;
+    background: linear-gradient(160deg, #1C3A1C 0%, #2D5A2D 50%, #1a2e1a 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 0;
+  }
+  .splash-mandala {
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%, rgba(232,135,26,0.22) 0%, transparent 70%);
+    border: 2px solid rgba(232,135,26,0.35);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+    position: relative;
+    animation: pulseGlow 3s ease-in-out infinite;
+  }
+  @keyframes pulseGlow {
+    0%,100% { box-shadow: 0 0 0 0 rgba(232,135,26,0.18); }
+    50% { box-shadow: 0 0 0 20px rgba(232,135,26,0.06); }
+  }
+  .splash-lotus {
+    font-size: 72px;
+    line-height: 1;
+    filter: drop-shadow(0 0 18px rgba(232,135,26,0.5));
+  }
+  .splash-title {
+    font-size: 38px; font-weight: 700; color: #fff;
+    letter-spacing: -0.5px; margin-bottom: 6px;
+  }
+  .splash-title span { color: var(--saffron); }
+  .splash-sub { font-size: 14px; color: rgba(255,255,255,0.6); letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 48px; }
+  .splash-btn {
+    background: var(--saffron); color: #fff;
+    border: none; padding: 16px 48px;
+    border-radius: 50px; font-size: 16px; font-weight: 600;
+    cursor: pointer; letter-spacing: 0.3px;
+    box-shadow: 0 8px 32px rgba(232,135,26,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .splash-btn:active { transform: scale(0.97); }
+  .splash-tagline { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 16px; }
+
+  /* ── SETUP ── */
+  #setup-screen {
+    display: none; min-height: 100vh;
+    background: linear-gradient(180deg, #1C3A1C 0%, var(--cream) 340px);
+    padding: 0 0 80px 0;
+  }
+  .setup-header {
+    padding: 56px 24px 32px;
+    text-align: center;
+  }
+  .setup-header h1 { color: #fff; font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .setup-header p { color: rgba(255,255,255,0.65); font-size: 14px; }
+  .setup-card {
+    background: var(--white); border-radius: var(--radius-xl);
+    margin: 0 16px 20px;
+    padding: 24px 20px;
+    box-shadow: var(--shadow-lg);
+  }
+  .setup-card h3 {
+    font-size: 13px; font-weight: 600; color: var(--saffron);
+    letter-spacing: 1.5px; text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .field-row { margin-bottom: 16px; }
+  .field-row label { display: block; font-size: 13px; color: var(--text-mid); margin-bottom: 6px; font-weight: 500; }
+  .field-row input, .field-row select {
+    width: 100%; padding: 13px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm); font-size: 15px;
+    background: var(--cream); color: var(--text-dark);
+    outline: none; transition: border-color 0.2s;
+  }
+  .field-row input:focus, .field-row select:focus { border-color: var(--forest-light); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .goal-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 8px 16px; border-radius: 50px; font-size: 13px;
+    border: 1.5px solid var(--border); cursor: pointer;
+    background: var(--cream); color: var(--text-mid); font-weight: 500;
+    transition: all 0.2s;
+  }
+  .chip.active { background: var(--forest); color: #fff; border-color: var(--forest); }
+  .setup-submit {
+    width: calc(100% - 32px); margin: 0 16px;
+    background: var(--forest); color: #fff;
+    border: none; padding: 17px; border-radius: var(--radius);
+    font-size: 16px; font-weight: 600; cursor: pointer;
+    box-shadow: 0 8px 24px rgba(28,58,28,0.3);
+  }
+
+  /* ── MAIN APP ── */
+  #app { display: none; min-height: 100vh; padding-bottom: 80px; }
+
+  /* TOP BAR */
+  .topbar {
+    background: linear-gradient(135deg, #1C3A1C 0%, #2D5A2D 100%);
+    padding: 52px 20px 20px;
+    position: relative; overflow: hidden;
+  }
+  .topbar::before {
+    content: ''; position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%; top: -60px; right: -40px;
+    background: rgba(232,135,26,0.12);
+  }
+  .topbar-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .topbar-name { font-size: 22px; font-weight: 700; color: #fff; }
+  .topbar-date { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+  .topbar-streak {
+    background: rgba(232,135,26,0.2); border: 1px solid rgba(232,135,26,0.4);
+    border-radius: 50px; padding: 5px 12px;
+    font-size: 12px; color: var(--saffron); font-weight: 600;
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  /* CALORIE RING */
+  .calring-wrap {
+    background: linear-gradient(135deg, #1C3A1C 0%, #2D5A2D 100%);
+    padding: 0 20px 28px;
+  }
+  .calring-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-xl);
+    padding: 24px 20px;
+    display: flex; align-items: center; gap: 24px;
+  }
+  .ring-svg { flex-shrink: 0; }
+  .ring-info { flex: 1; }
+  .ring-info .cal-num { font-size: 34px; font-weight: 700; color: #fff; line-height: 1; }
+  .ring-info .cal-label { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 2px; margin-bottom: 14px; }
+  .macro-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .macro-item { text-align: center; }
+  .macro-val { font-size: 14px; font-weight: 600; color: #fff; }
+  .macro-lab { font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 1px; }
+
+  /* QUICK LOG */
+  .section { padding: 20px 16px 0; }
+  .section-title {
+    font-size: 13px; font-weight: 600; color: var(--text-light);
+    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .quick-log-row { display: flex; gap: 10px; margin-bottom: 16px; }
+  .quick-log-row input {
+    flex: 1; padding: 13px 16px;
+    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    font-size: 15px; background: var(--white); color: var(--text-dark); outline: none;
+  }
+  .quick-log-row input:focus { border-color: var(--forest-light); }
+  .log-btn {
+    background: var(--saffron); color: #fff;
+    border: none; border-radius: var(--radius-sm);
+    padding: 0 20px; font-size: 22px; cursor: pointer;
+    font-weight: 300;
+  }
+
+  /* FOOD CARDS */
+  .food-log { display: flex; flex-direction: column; gap: 10px; }
+  .food-item {
+    background: var(--white); border-radius: var(--radius);
+    padding: 14px 16px; border: 1px solid var(--border);
+    display: flex; align-items: center; gap: 14px;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform:none; } }
+  .food-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: var(--saffron-light); display: flex;
+    align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .food-info { flex: 1; min-width: 0; }
+  .food-name { font-size: 15px; font-weight: 600; color: var(--text-dark); }
+  .food-meta { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+  .food-cal { font-size: 14px; font-weight: 700; color: var(--terracotta); white-space: nowrap; }
+  .food-del {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #fff3f3; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; color: #e24b4b; flex-shrink: 0;
+  }
+
+  /* QUICK ADD FOODS */
+  .quick-foods {
+    display: flex; overflow-x: auto; gap: 10px;
+    padding-bottom: 4px; scrollbar-width: none;
+  }
+  .quick-foods::-webkit-scrollbar { display: none; }
+  .qfood {
+    flex-shrink: 0; background: var(--white);
+    border: 1.5px solid var(--border); border-radius: var(--radius);
+    padding: 12px 16px; text-align: center; cursor: pointer;
+    transition: all 0.2s; min-width: 90px;
+  }
+  .qfood:active { background: var(--saffron-light); border-color: var(--saffron); }
+  .qfood .qf-icon { font-size: 24px; display: block; margin-bottom: 4px; }
+  .qfood .qf-name { font-size: 11px; color: var(--text-mid); font-weight: 500; }
+  .qfood .qf-cal { font-size: 11px; color: var(--saffron); font-weight: 600; }
+
+  /* INSIGHT CARDS */
+  .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ins-card {
+    border-radius: var(--radius); padding: 16px 14px;
+    position: relative; overflow: hidden;
+  }
+  .ins-card.green { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); }
+  .ins-card.orange { background: linear-gradient(135deg, #fff3e0, #ffe0b2); }
+  .ins-card.red { background: linear-gradient(135deg, #fce4ec, #f8bbd9); }
+  .ins-card.blue { background: linear-gradient(135deg, #e3f2fd, #bbdefb); }
+  .ins-icon { font-size: 26px; margin-bottom: 8px; display: block; }
+  .ins-val { font-size: 22px; font-weight: 700; color: var(--text-dark); line-height: 1; }
+  .ins-lab { font-size: 11px; color: var(--text-mid); margin-top: 3px; }
+
+  /* WATER TRACKER */
+  .water-card {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    border-radius: var(--radius-xl); padding: 20px;
+  }
+  .water-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .water-title { font-size: 15px; font-weight: 600; color: #1565c0; display: flex; align-items: center; gap: 6px; }
+  .water-count { font-size: 13px; color: #1976d2; font-weight: 600; }
+  .water-cups { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .water-cup {
+    width: 38px; height: 38px; border-radius: 10px;
+    border: 2px solid rgba(25,118,210,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; cursor: pointer; transition: all 0.2s;
+    background: rgba(255,255,255,0.5);
+  }
+  .water-cup.filled { background: #1976d2; border-color: #1565c0; }
+  .water-ml { font-size: 12px; color: #1565c0; text-align: center; }
+
+  /* FASTING TIMER */
+  .fast-card {
+    background: linear-gradient(135deg, #1C3A1C 0%, #2D5A2D 100%);
+    border-radius: var(--radius-xl); padding: 22px 20px;
+    color: #fff;
+  }
+  .fast-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+  .fast-title { font-size: 16px; font-weight: 600; }
+  .fast-status {
+    font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 50px;
+    background: rgba(232,135,26,0.2); color: var(--saffron);
+    border: 1px solid rgba(232,135,26,0.3);
+  }
+  .fast-timer { text-align: center; margin: 4px 0 18px; }
+  .fast-time { font-size: 48px; font-weight: 700; letter-spacing: -2px; color: #fff; font-variant-numeric: tabular-nums; }
+  .fast-label { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+  .fast-progress {
+    height: 6px; background: rgba(255,255,255,0.12);
+    border-radius: 50px; margin-bottom: 18px; overflow: hidden;
+  }
+  .fast-bar { height: 100%; background: var(--saffron); border-radius: 50px; transition: width 0.5s ease; }
+  .fast-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .fast-btn {
+    padding: 12px; border-radius: var(--radius-sm);
+    border: 1px solid rgba(255,255,255,0.2); font-size: 14px;
+    font-weight: 600; cursor: pointer; text-align: center;
+    transition: all 0.2s;
+  }
+  .fast-btn.start { background: var(--saffron); color: #fff; border-color: var(--saffron); }
+  .fast-btn.stop { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); }
+  .fast-btn:active { transform: scale(0.97); }
+
+  /* WEIGHT TREND */
+  .weight-card {
+    background: var(--white); border-radius: var(--radius-xl);
+    padding: 20px; border: 1px solid var(--border);
+  }
+  .wt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .wt-title { font-size: 15px; font-weight: 600; color: var(--text-dark); }
+  .wt-diff { font-size: 13px; font-weight: 600; }
+  .wt-diff.up { color: var(--terracotta); }
+  .wt-diff.down { color: var(--forest-mid); }
+  .wt-input-row { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; }
+  .wt-input {
+    flex: 1; padding: 11px 16px;
+    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    font-size: 22px; font-weight: 700; text-align: center;
+    color: var(--text-dark); background: var(--cream); outline: none;
+  }
+  .wt-unit { font-size: 15px; color: var(--text-light); font-weight: 500; }
+  .wt-save {
+    background: var(--forest); color: #fff;
+    border: none; padding: 11px 20px; border-radius: var(--radius-sm);
+    font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .wt-chart { width: 100%; height: 80px; }
+
+  /* TOMORROW PLAN */
+  .tmr-card {
+    background: linear-gradient(135deg, #fff8e1, #fff3cd);
+    border-radius: var(--radius-xl); padding: 20px;
+    border: 1px solid rgba(212,160,23,0.2);
+  }
+  .tmr-title { font-size: 15px; font-weight: 600; color: #7c5000; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px; }
+  .tmr-row { display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid rgba(212,160,23,0.15); }
+  .tmr-row:last-child { border: none; padding-bottom: 0; }
+  .tmr-label { font-size: 13px; color: #7c5000; }
+  .tmr-val { font-size: 14px; font-weight: 700; color: #5a3800; }
+
+  /* AI COACH */
+  .coach-card {
+    background: linear-gradient(135deg, #EDE7F6, #D1C4E9);
+    border-radius: var(--radius-xl); padding: 20px;
+  }
+  .coach-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .coach-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, #7E57C2, #5E35B1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .coach-name { font-size: 14px; font-weight: 600; color: #311b92; }
+  .coach-role { font-size: 11px; color: #7e57c2; }
+  .coach-msg {
+    background: #fff; border-radius: var(--radius-sm);
+    padding: 14px; font-size: 14px; color: var(--text-dark);
+    line-height: 1.6; box-shadow: 0 2px 8px rgba(94,53,177,0.1);
+  }
+  .coach-ask {
+    margin-top: 12px; display: flex; gap: 8px;
+  }
+  .coach-ask input {
+    flex: 1; padding: 10px 14px;
+    border: 1.5px solid rgba(126,87,194,0.3); border-radius: var(--radius-sm);
+    font-size: 14px; background: #fff; color: var(--text-dark); outline: none;
+  }
+  .coach-ask button {
+    background: #7E57C2; color: #fff;
+    border: none; border-radius: var(--radius-sm); padding: 0 16px;
+    font-size: 20px; cursor: pointer;
+  }
+
+  /* NOTIFICATION SETTINGS */
+  .notif-card {
+    background: var(--white); border-radius: var(--radius-xl);
+    padding: 20px; border: 1px solid var(--border);
+  }
+  .notif-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .notif-row:last-child { border: none; }
+  .notif-info { }
+  .notif-label { font-size: 14px; font-weight: 500; color: var(--text-dark); }
+  .notif-sub { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+  .toggle {
+    width: 44px; height: 24px; border-radius: 50px;
+    background: #ddd; cursor: pointer; position: relative;
+    transition: background 0.3s; flex-shrink: 0;
+    border: none; outline: none;
+  }
+  .toggle::after {
+    content: ''; position: absolute;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #fff; top: 3px; left: 3px;
+    transition: left 0.3s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+  .toggle.on { background: var(--forest-mid); }
+  .toggle.on::after { left: 23px; }
+
+  /* GOAL PROGRESS */
+  .goal-card {
+    background: var(--white); border-radius: var(--radius-xl);
+    padding: 20px; border: 1px solid var(--border);
+  }
+  .goal-item { margin-bottom: 16px; }
+  .goal-item:last-child { margin-bottom: 0; }
+  .goal-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .goal-name { font-size: 14px; font-weight: 500; color: var(--text-dark); }
+  .goal-pct { font-size: 13px; font-weight: 600; color: var(--forest-mid); }
+  .goal-bar { height: 8px; background: var(--cream-deep); border-radius: 50px; overflow: hidden; }
+  .goal-fill { height: 100%; border-radius: 50px; transition: width 0.8s ease; }
+  .goal-fill.cal { background: linear-gradient(90deg, var(--saffron), var(--terracotta)); }
+  .goal-fill.protein { background: linear-gradient(90deg, #4caf50, #2e7d32); }
+  .goal-fill.water { background: linear-gradient(90deg, #42a5f5, #1565c0); }
+  .goal-fill.fast { background: linear-gradient(90deg, #7E57C2, #4527a0); }
+  .goal-fill.weight { background: linear-gradient(90deg, var(--gold), var(--saffron-deep)); }
+
+  /* TABS */
+  .tabs {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    display: flex; z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  .tab {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 10px 4px 10px; cursor: pointer; transition: all 0.2s;
+    border: none; background: none;
+  }
+  .tab-icon { font-size: 22px; color: #bbb; transition: all 0.2s; }
+  .tab-label { font-size: 10px; color: #bbb; margin-top: 3px; font-weight: 500; }
+  .tab.active .tab-icon { color: var(--forest-mid); }
+  .tab.active .tab-label { color: var(--forest-mid); }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 500; display: none; align-items: flex-end;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--white); border-radius: 24px 24px 0 0;
+    padding: 24px 20px 40px; width: 100%;
+    max-height: 90vh; overflow-y: auto;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: none; } }
+  .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; display: flex; justify-content: space-between; }
+  .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-light); }
+
+  /* TOAST */
+  .toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px);
+    background: var(--forest); color: #fff;
+    padding: 12px 24px; border-radius: 50px;
+    font-size: 14px; font-weight: 500; z-index: 999;
+    transition: transform 0.3s ease; white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(28,58,28,0.3);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* HISTORY */
+  .hist-day { margin-bottom: 20px; }
+  .hist-date { font-size: 12px; font-weight: 600; color: var(--text-light); letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 10px; }
+  .hist-summary {
+    background: var(--white); border-radius: var(--radius); padding: 14px 16px;
+    border: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .hist-cal-label { font-size: 13px; color: var(--text-mid); }
+  .hist-cal-val { font-size: 18px; font-weight: 700; }
+  .hist-cal-val.over { color: var(--terracotta); }
+  .hist-cal-val.under { color: var(--forest-mid); }
+  .hist-cal-val.good { color: var(--gold); }
+  .hist-badge { font-size: 11px; padding: 3px 10px; border-radius: 50px; font-weight: 600; }
+  .hist-badge.fast { background: #EDE7F6; color: #7E57C2; }
+  .hist-badge.vrat { background: #E8F5E9; color: #2e7d32; }
+
+  /* PLAN TOMORROW */
+  .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .plan-item { background: var(--white); border-radius: var(--radius);
+    padding: 14px; border: 1px solid var(--border); text-align: center; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .plan-item:active { background: var(--saffron-light); border-color: var(--saffron); }
+  .plan-item .pi-icon { font-size: 28px; display: block; margin-bottom: 6px; }
+  .plan-item .pi-name { font-size: 13px; font-weight: 600; color: var(--text-dark); }
+  .plan-item .pi-cal { font-size: 12px; color: var(--text-light); }
+
+  /* SCROLLABLE */
+  .scroll-content { max-height: calc(100vh - 140px); overflow-y: auto; padding-bottom: 20px; }
+
+  /* ANIMATE */
+  .fade-in { animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* RESPONSIVE */
+  @media (max-width: 360px) {
+    .calring-card { flex-direction: column; text-align: center; }
+    .macro-row { gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✓ சேமிக்கப்பட்டது</div>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-mandala">
+    <span class="splash-lotus">🪷</span>
+  </div>
+  <div class="splash-title">Diet<span>Daily</span></div>
+  <div class="splash-sub">உடல் ஆரோக்கிய கண்காணிப்பு</div>
+  <button class="splash-btn" onclick="showSetup()">தொடங்கலாம் →</button>
+  <div class="splash-tagline">உங்கள் உடலை புரிந்துகொள்ளுங்கள்</div>
+</div>
+
+<!-- SETUP -->
+<div id="setup-screen">
+  <div class="setup-header">
+    <h1>உங்கள் விவரங்கள்</h1>
+    <p>ஒரே ஒரு முறை உள்ளிடவும் — நாங்கள் மற்றவை கணக்கிடுகிறோம்</p>
+  </div>
+
+  <div class="setup-card">
+    <h3>👤 தனிப்பட்ட விவரம்</h3>
+    <div class="field-row">
+      <label>பெயர் (உங்கள் பெயர்)</label>
+      <input type="text" id="s-name" placeholder="உ.தா: Dharma" />
+    </div>
+    <div class="grid-2">
+      <div class="field-row">
+        <label>வயது</label>
+        <input type="number" id="s-age" placeholder="48" />
+      </div>
+      <div class="field-row">
+        <label>உயரம் (cm)</label>
+        <input type="number" id="s-height" placeholder="170" />
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field-row">
+        <label>தற்போதைய எடை (kg)</label>
+        <input type="number" id="s-weight" placeholder="80" step="0.1" />
+      </div>
+      <div class="field-row">
+        <label>இலக்கு எடை (kg)</label>
+        <input type="number" id="s-goal-weight" placeholder="72" step="0.1" />
+      </div>
+    </div>
+    <div class="field-row">
+      <label>பாலினம்</label>
+      <select id="s-gender">
+        <option value="male">ஆண் (Male)</option>
+        <option value="female">பெண் (Female)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="setup-card">
+    <h3>🏃 செயல்பாடு நிலை</h3>
+    <div class="field-row">
+      <label>தினசரி செயல்பாடு</label>
+      <select id="s-activity">
+        <option value="1.2">மிகவும் குறைவு (படுத்திருக்கிறேன்)</option>
+        <option value="1.375">குறைவு (வாரம் 1-3 உடற்பயிற்சி)</option>
+        <option value="1.55" selected>மிதமானது (வாரம் 3-5 உடற்பயிற்சி)</option>
+        <option value="1.725">அதிகம் (வாரம் 6-7 உடற்பயிற்சி)</option>
+        <option value="1.9">மிகவும் அதிகம் (உடல் உழைப்பு வேலை)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="setup-card">
+    <h3>🎯 உங்கள் இலக்கு</h3>
+    <div class="goal-chips">
+      <div class="chip active" data-goal="loss" onclick="selectGoal(this)">⬇️ எடை குறைக்க</div>
+      <div class="chip" data-goal="maintain" onclick="selectGoal(this)">⚖️ எடை தக்கவைக்க</div>
+      <div class="chip" data-goal="gain" onclick="selectGoal(this)">⬆️ எடை கூட்ட</div>
+      <div class="chip" data-goal="diabetes" onclick="selectGoal(this)">🩸 சர்க்கரை கட்டுப்பாடு</div>
+      <div class="chip" data-goal="bp" onclick="selectGoal(this)">❤️ BP கட்டுப்பாடு</div>
+    </div>
+  </div>
+
+  <div class="setup-card">
+    <h3>🕐 விரத முறை</h3>
+    <div class="goal-chips">
+      <div class="chip active" data-fast="16:8" onclick="selectFast(this)">16:8 விரதம்</div>
+      <div class="chip" data-fast="18:6" onclick="selectFast(this)">18:6 விரதம்</div>
+      <div class="chip" data-fast="20:4" onclick="selectFast(this)">20:4 OMAD</div>
+      <div class="chip" data-fast="none" onclick="selectFast(this)">விரதம் இல்லை</div>
+    </div>
+  </div>
+
+  <button class="setup-submit" onclick="saveSetup()">✓ ஆரோக்கியம் கண்காணிப்பை தொடங்கு</button>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+
+  <!-- PAGE 1: HOME (இன்று) -->
+  <div class="page active" id="page-home">
+    <div class="topbar">
+      <div class="topbar-row">
+        <div>
+          <div class="topbar-name">வணக்கம், <span id="disp-name">Dharma</span> 🙏</div>
+          <div class="topbar-date" id="disp-date">—</div>
+        </div>
+        <div class="topbar-streak" id="disp-streak">🔥 0 நாட்கள்</div>
+      </div>
+    </div>
+
+    <div class="calring-wrap">
+      <div class="calring-card">
+        <svg class="ring-svg" id="cal-ring-svg" width="110" height="110" viewBox="0 0 110 110">
+          <circle cx="55" cy="55" r="46" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="10"/>
+          <circle cx="55" cy="55" r="46" fill="none" stroke="url(#rg)" stroke-width="10"
+            stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289"
+            transform="rotate(-90 55 55)" id="cal-ring-circle" style="transition:stroke-dashoffset 0.8s ease"/>
+          <defs>
+            <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#E8871A"/>
+              <stop offset="100%" stop-color="#C4522A"/>
+            </linearGradient>
+          </defs>
+          <text x="55" y="50" text-anchor="middle" fill="#fff" font-size="15" font-weight="700" id="ring-pct">0%</text>
+          <text x="55" y="66" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9">கலோரி</text>
+        </svg>
+        <div class="ring-info">
+          <div class="cal-num"><span id="disp-eaten">0</span></div>
+          <div class="cal-label">/ <span id="disp-goal-cal">2000</span> kcal இன்று</div>
+          <div class="macro-row">
+            <div class="macro-item">
+              <div class="macro-val" id="disp-prot">0g</div>
+              <div class="macro-lab">புரதம்</div>
+            </div>
+            <div class="macro-item">
+              <div class="macro-val" id="disp-carb">0g</div>
+              <div class="macro-lab">மாவுச்சத்து</div>
+            </div>
+            <div class="macro-item">
+              <div class="macro-val" id="disp-fat">0g</div>
+              <div class="macro-lab">கொழுப்பு</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🍛 இன்று சாப்பிட்டது</div>
+      <div class="quick-log-row">
+        <input type="text" id="food-input" placeholder="உணவு பெயர் (உ.தா: இட்லி, சாம்பார்...)" />
+        <button class="log-btn" onclick="openFoodModal()">+</button>
+      </div>
+      <div class="food-log" id="food-log">
+        <div style="text-align:center;padding:20px;color:var(--text-light);font-size:13px;">
+          <div style="font-size:36px;margin-bottom:8px;">🥘</div>
+          இன்னும் எதுவும் சேர்க்கவில்லை.<br>மேலே + அழுத்தி தொடங்குங்கள்!
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">⚡ விரைவாக சேர்க்க</div>
+      <div class="quick-foods" id="quick-foods-list"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📊 இன்றைய நிலை</div>
+      <div class="insight-grid">
+        <div class="ins-card green">
+          <span class="ins-icon">⚖️</span>
+          <div class="ins-val" id="ins-bmi">—</div>
+          <div class="ins-lab">BMI</div>
+        </div>
+        <div class="ins-card orange">
+          <span class="ins-icon">🔥</span>
+          <div class="ins-val" id="ins-burned">—</div>
+          <div class="ins-lab">கலோரி எரிந்தது</div>
+        </div>
+        <div class="ins-card red">
+          <span class="ins-icon">📉</span>
+          <div class="ins-val" id="ins-deficit">—</div>
+          <div class="ins-lab">கலோரி குறைபாடு</div>
+        </div>
+        <div class="ins-card blue">
+          <span class="ins-icon">🎯</span>
+          <div class="ins-val" id="ins-days">—</div>
+          <div class="ins-lab">இலக்கு நாட்கள்</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">💧 நீர் கண்காணிப்பு</div>
+      <div class="water-card">
+        <div class="water-header">
+          <div class="water-title">💧 தண்ணீர் குடித்தது</div>
+          <div class="water-count" id="water-ml-disp">0 / 2500 ml</div>
+        </div>
+        <div class="water-cups" id="water-cups"></div>
+        <div class="water-ml">ஒவ்வொரு குவளையும் = 250ml | தினசரி இலக்கு: 2500ml (10 குவளை)</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">⏳ விரத கண்காணிப்பு</div>
+      <div class="fast-card">
+        <div class="fast-header">
+          <div>
+            <div class="fast-title">🌙 இன்டர்மிட்டண்ட் பாஸ்டிங்</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px" id="fast-type-disp">16:8 விரதம்</div>
+          </div>
+          <div class="fast-status" id="fast-status-badge">நிறுத்தம்</div>
+        </div>
+        <div class="fast-timer">
+          <div class="fast-time" id="fast-timer-disp">00:00:00</div>
+          <div class="fast-label" id="fast-sublabel">சாப்பிடாத நேரம்</div>
+        </div>
+        <div class="fast-progress">
+          <div class="fast-bar" id="fast-bar" style="width:0%"></div>
+        </div>
+        <div class="fast-btns">
+          <button class="fast-btn start" id="fast-start-btn" onclick="toggleFast()">▶ விரதம் தொடங்கு</button>
+          <button class="fast-btn stop" onclick="breakFast()">🍽 சாப்பிட்டேன்</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" style="margin-bottom:16px;">
+      <div class="section-title">🤖 AI ஆலோசகர்</div>
+      <div class="coach-card">
+        <div class="coach-header">
+          <div class="coach-avatar">🧘</div>
+          <div>
+            <div class="coach-name">ஆரோக்கிய குரு</div>
+            <div class="coach-role">உங்கள் தனிப்பட்ட ஆரோக்கிய உதவியாளர்</div>
+          </div>
+        </div>
+        <div class="coach-msg" id="coach-message">
+          வணக்கம்! இன்று என்ன சாப்பிட்டீர்கள் என்று சொல்லுங்கள், உங்கள் கலோரிகளை கணக்கிடுகிறேன். 
+          நீங்கள் உங்கள் இலக்கை அடைய என்னால் உதவ முடியும்! 💪
+        </div>
+        <div class="coach-ask">
+          <input type="text" id="coach-input" placeholder="எந்த கேள்வியும் கேளுங்கள்..." />
+          <button onclick="askCoach()">→</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 2: LOG / FOOD DB -->
+  <div class="page" id="page-log">
+    <div style="background:linear-gradient(135deg,#1C3A1C,#2D5A2D);padding:52px 20px 28px;">
+      <div style="color:#fff;font-size:22px;font-weight:700;margin-bottom:4px;">🍱 உணவு கணக்கு</div>
+      <div style="color:rgba(255,255,255,0.6);font-size:13px;">கலோரி தேடல் & பதிவு</div>
+    </div>
+
+    <div class="section" style="margin-top:16px;">
+      <div class="section-title">🔍 உணவு தேடல்</div>
+      <div class="quick-log-row">
+        <input type="text" id="search-food-input" placeholder="உணவு தேடுங்கள்..." oninput="searchFoods(this.value)" />
+      </div>
+      <div id="search-results" style="margin-top:4px;"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🍚 இந்திய உணவு தரவுத்தளம்</div>
+      <div id="food-categories"></div>
+    </div>
+
+    <div class="section" style="margin-bottom:16px;">
+      <div class="section-title">📏 கலோரி கணக்கீடு</div>
+      <div class="weight-card">
+        <div style="margin-bottom:14px;font-size:14px;font-weight:600;color:var(--text-dark);">
+          🧮 எடை அடிப்படையில் கணக்கிடு
+        </div>
+        <div class="grid-2" style="gap:10px;margin-bottom:12px;">
+          <div class="field-row" style="margin:0;">
+            <label>உணவு</label>
+            <select id="calc-food" style="padding:10px 12px;font-size:13px;">
+              <option value="idli:39">இட்லி (1 piece)</option>
+              <option value="rice:206">சாதம் (1 கப்)</option>
+              <option value="chapati:120">சப்பாத்தி (1 piece)</option>
+              <option value="dal:100">பருப்பு (100g)</option>
+              <option value="chicken:165">கோழி (100g)</option>
+              <option value="egg:78">முட்டை (1 piece)</option>
+              <option value="banana:89">வாழைப்பழம் (1 piece)</option>
+              <option value="milk:42">பால் (100ml)</option>
+              <option value="dosa:133">தோசை (1 piece)</option>
+              <option value="sambar:45">சாம்பார் (100g)</option>
+            </select>
+          </div>
+          <div class="field-row" style="margin:0;">
+            <label>அளவு</label>
+            <input type="number" id="calc-qty" value="1" min="0.5" step="0.5" style="padding:10px 12px;font-size:13px;" oninput="updateCalc()" />
+          </div>
+        </div>
+        <div style="background:var(--saffron-light);border-radius:var(--radius-sm);padding:14px;text-align:center;margin-bottom:12px;">
+          <div style="font-size:32px;font-weight:700;color:var(--saffron-deep);" id="calc-result">39</div>
+          <div style="font-size:12px;color:var(--text-mid);margin-top:4px;">கலோரிகள் (kcal)</div>
+        </div>
+        <button onclick="addCalcFood()" style="width:100%;background:var(--saffron);color:#fff;border:none;padding:13px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;">
+          + இன்றைய பட்டியலில் சேர்க்க
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 3: PLAN (நாளை திட்டம்) -->
+  <div class="page" id="page-plan">
+    <div style="background:linear-gradient(135deg,#1C3A1C,#2D5A2D);padding:52px 20px 28px;">
+      <div style="color:#fff;font-size:22px;font-weight:700;margin-bottom:4px;">📅 நாளை திட்டம்</div>
+      <div style="color:rgba(255,255,255,0.6);font-size:13px;">நாளைக்கு எப்படி சாப்பிடுவது?</div>
+    </div>
+
+    <div class="section" style="margin-top:16px;">
+      <div class="section-title">🔮 நாளையின் வழிகாட்டுதல்</div>
+      <div class="tmr-card">
+        <div class="tmr-title">☀️ நாளை வழிகாட்டுதல்</div>
+        <div id="tmr-content">
+          <div class="tmr-row">
+            <span class="tmr-label">நாளை கலோரி இலக்கு</span>
+            <span class="tmr-val" id="tmr-cal-goal">—</span>
+          </div>
+          <div class="tmr-row">
+            <span class="tmr-label">நாளை நேரம்</span>
+            <span class="tmr-val" id="tmr-fast-window">—</span>
+          </div>
+          <div class="tmr-row">
+            <span class="tmr-label">முதல் சாப்பாடு</span>
+            <span class="tmr-val" id="tmr-first-meal">—</span>
+          </div>
+          <div class="tmr-row">
+            <span class="tmr-label">கடைசி சாப்பாடு</span>
+            <span class="tmr-val" id="tmr-last-meal">—</span>
+          </div>
+          <div class="tmr-row">
+            <span class="tmr-label">எடை மாற்றம் (கணிப்பு)</span>
+            <span class="tmr-val" id="tmr-weight-change">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🥗 நாளை உணவு திட்டம்</div>
+      <div class="plan-grid" id="tomorrow-meals"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">⚖️ எடை கண்காணிப்பு</div>
+      <div class="weight-card">
+        <div class="wt-header">
+          <div class="wt-title">⚖️ இன்றைய எடை</div>
+          <div class="wt-diff" id="wt-diff">—</div>
+        </div>
+        <div class="wt-input-row">
+          <input type="number" class="wt-input" id="weight-input" placeholder="80.0" step="0.1" />
+          <span class="wt-unit">kg</span>
+          <button class="wt-save" onclick="saveWeight()">சேமி</button>
+        </div>
+        <canvas class="wt-chart" id="weight-chart"></canvas>
+      </div>
+    </div>
+
+    <div class="section" style="margin-bottom:16px;">
+      <div class="section-title">🎯 இலக்கு முன்னேற்றம்</div>
+      <div class="goal-card">
+        <div class="goal-item">
+          <div class="goal-row"><span class="goal-name">🔥 கலோரி இலக்கு</span><span class="goal-pct" id="g-cal-pct">0%</span></div>
+          <div class="goal-bar"><div class="goal-fill cal" id="g-cal-bar" style="width:0%"></div></div>
+        </div>
+        <div class="goal-item">
+          <div class="goal-row"><span class="goal-name">💪 புரதம் இலக்கு</span><span class="goal-pct" id="g-prot-pct">0%</span></div>
+          <div class="goal-bar"><div class="goal-fill protein" id="g-prot-bar" style="width:0%"></div></div>
+        </div>
+        <div class="goal-item">
+          <div class="goal-row"><span class="goal-name">💧 நீர் இலக்கு</span><span class="goal-pct" id="g-water-pct">0%</span></div>
+          <div class="goal-bar"><div class="goal-fill water" id="g-water-bar" style="width:0%"></div></div>
+        </div>
+        <div class="goal-item">
+          <div class="goal-row"><span class="goal-name">⏳ விரத இலக்கு</span><span class="goal-pct" id="g-fast-pct">0%</span></div>
+          <div class="goal-bar"><div class="goal-fill fast" id="g-fast-bar" style="width:0%"></div></div>
+        </div>
+        <div class="goal-item">
+          <div class="goal-row"><span class="goal-name">🎯 எடை இலக்கு</span><span class="goal-pct" id="g-weight-pct">0%</span></div>
+          <div class="goal-bar"><div class="goal-fill weight" id="g-weight-bar" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 4: HISTORY -->
+  <div class="page" id="page-hist">
+    <div style="background:linear-gradient(135deg,#1C3A1C,#2D5A2D);padding:52px 20px 28px;">
+      <div style="color:#fff;font-size:22px;font-weight:700;margin-bottom:4px;">📜 வரலாறு</div>
+      <div style="color:rgba(255,255,255,0.6);font-size:13px;">கடந்த நாட்கள் பதிவு</div>
+    </div>
+    <div class="section" style="margin-top:16px;" id="history-content">
+      <div style="text-align:center;padding:40px 20px;color:var(--text-light);">
+        <div style="font-size:48px;margin-bottom:12px;">📅</div>
+        <div style="font-size:15px;font-weight:600;">இன்னும் வரலாறு இல்லை</div>
+        <div style="font-size:13px;margin-top:6px;">இன்று சாப்பிட்டதை பதிவிட்டால் இங்கே தெரியும்</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 5: SETTINGS -->
+  <div class="page" id="page-settings">
+    <div style="background:linear-gradient(135deg,#1C3A1C,#2D5A2D);padding:52px 20px 28px;">
+      <div style="color:#fff;font-size:22px;font-weight:700;margin-bottom:4px;">⚙️ அமைப்புகள்</div>
+      <div style="color:rgba(255,255,255,0.6);font-size:13px;">அறிவிப்பு & தனிப்பயனாக்கம்</div>
+    </div>
+
+    <div class="section" style="margin-top:16px;">
+      <div class="section-title">🔔 நினைவூட்டல்கள்</div>
+      <div class="notif-card">
+        <div class="notif-row">
+          <div class="notif-info">
+            <div class="notif-label">💧 நீர் நினைவூட்டல்</div>
+            <div class="notif-sub">ஒவ்வொரு 2 மணி நேரத்திற்கும் ஒரு முறை</div>
+          </div>
+          <button class="toggle on" id="t-water" onclick="toggleNotif(this)"></button>
+        </div>
+        <div class="notif-row">
+          <div class="notif-info">
+            <div class="notif-label">🍽 சாப்பாடு நினைவூட்டல்</div>
+            <div class="notif-sub">காலை 8, மதியம் 1, மாலை 7 மணிக்கு</div>
+          </div>
+          <button class="toggle on" id="t-meal" onclick="toggleNotif(this)"></button>
+        </div>
+        <div class="notif-row">
+          <div class="notif-info">
+            <div class="notif-label">⏳ விரத அலாரம்</div>
+            <div class="notif-sub">விரத நேரம் முடியும்போது</div>
+          </div>
+          <button class="toggle on" id="t-fast" onclick="toggleNotif(this)"></button>
+        </div>
+        <div class="notif-row">
+          <div class="notif-info">
+            <div class="notif-label">⚖️ எடை நினைவூட்டல்</div>
+            <div class="notif-sub">தினமும் காலை 7 மணிக்கு</div>
+          </div>
+          <button class="toggle" id="t-weight" onclick="toggleNotif(this)"></button>
+        </div>
+        <div class="notif-row">
+          <div class="notif-info">
+            <div class="notif-label">🌙 இரவு சாப்பாடு எச்சரிக்கை</div>
+            <div class="notif-sub">இரவு 8 மணிக்கு பிறகு சாப்பிட்டால்</div>
+          </div>
+          <button class="toggle on" id="t-night" onclick="toggleNotif(this)"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">👤 சுயவிவரம் திருத்தம்</div>
+      <div class="notif-card" style="display:grid;gap:12px;">
+        <div class="field-row" style="margin:0;">
+          <label>தற்போதைய எடை (kg)</label>
+          <input type="number" id="edit-weight" step="0.1" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;background:var(--cream);outline:none;" />
+        </div>
+        <div class="field-row" style="margin:0;">
+          <label>கலோரி இலக்கு (kcal)</label>
+          <input type="number" id="edit-cal-goal" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;background:var(--cream);outline:none;" />
+        </div>
+        <div class="field-row" style="margin:0;">
+          <label>விரத வகை</label>
+          <select id="edit-fast" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;background:var(--cream);outline:none;">
+            <option value="16">16:8 (16 மணி விரதம்)</option>
+            <option value="18">18:6 (18 மணி விரதம்)</option>
+            <option value="20">20:4 OMAD</option>
+            <option value="0">விரதம் இல்லை</option>
+          </select>
+        </div>
+        <button onclick="saveSettings()" style="background:var(--forest);color:#fff;border:none;padding:13px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;">
+          ✓ மாற்றங்களை சேமி
+        </button>
+      </div>
+    </div>
+
+    <div class="section" style="margin-bottom:16px;">
+      <div class="section-title">ℹ️ பற்றி</div>
+      <div class="notif-card">
+        <div style="text-align:center;padding:16px 0;">
+          <div style="font-size:36px;margin-bottom:8px;">🪷</div>
+          <div style="font-size:18px;font-weight:700;color:var(--forest);">Diet Daily</div>
+          <div style="font-size:12px;color:var(--text-light);margin-top:4px;">Version 1.0 • உடல் ஆரோக்கிய கண்காணிப்பு</div>
+          <div style="font-size:12px;color:var(--text-light);margin-top:8px;line-height:1.6;">
+            இந்திய உணவு முறைகளுக்கு ஏற்ப வடிவமைக்கப்பட்ட<br>ஆரோக்கிய கண்காணிப்பு செயலி
+          </div>
+          <div style="margin-top:16px;padding:12px;background:var(--saffron-light);border-radius:var(--radius-sm);">
+            <div style="font-size:12px;color:var(--saffron-deep);line-height:1.6;">
+              ⚕️ இது மருத்துவ ஆலோசனை அல்ல.<br>உடல் நல பிரச்சனைக்கு மருத்துவரை அணுகவும்.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="showPage('home',this)">
+      <span class="tab-icon">🏠</span>
+      <span class="tab-label">இன்று</span>
+    </button>
+    <button class="tab" onclick="showPage('log',this)">
+      <span class="tab-icon">🍱</span>
+      <span class="tab-label">உணவு</span>
+    </button>
+    <button class="tab" onclick="showPage('plan',this)">
+      <span class="tab-icon">📅</span>
+      <span class="tab-label">திட்டம்</span>
+    </button>
+    <button class="tab" onclick="showPage('hist',this)">
+      <span class="tab-icon">📜</span>
+      <span class="tab-label">வரலாறு</span>
+    </button>
+    <button class="tab" onclick="showPage('settings',this)">
+      <span class="tab-icon">⚙️</span>
+      <span class="tab-label">அமைப்பு</span>
+    </button>
+  </div>
+</div>
+
+<!-- FOOD MODAL -->
+<div class="modal-overlay" id="food-modal">
+  <div class="modal">
+    <div class="modal-title">
+      <span>🍽 உணவு சேர்க்க</span>
+      <button class="modal-close" onclick="closeFoodModal()">✕</button>
+    </div>
+    <div class="field-row">
+      <label>உணவு பெயர்</label>
+      <input type="text" id="modal-food-name" placeholder="உ.தா: இட்லி, சாதம், தோசை..." />
+    </div>
+    <div class="grid-2">
+      <div class="field-row">
+        <label>கலோரி (kcal)</label>
+        <input type="number" id="modal-cal" placeholder="150" />
+      </div>
+      <div class="field-row">
+        <label>அளவு</label>
+        <input type="text" id="modal-qty" placeholder="2 pieces" />
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field-row">
+        <label>புரதம் (g)</label>
+        <input type="number" id="modal-prot" placeholder="5" />
+      </div>
+      <div class="field-row">
+        <label>மாவுச்சத்து (g)</label>
+        <input type="number" id="modal-carb" placeholder="30" />
+      </div>
+    </div>
+    <div class="field-row">
+      <label>கொழுப்பு (g)</label>
+      <input type="number" id="modal-fat" placeholder="2" />
+    </div>
+    <div style="font-size:12px;color:var(--text-light);margin-bottom:16px;">
+      💡 கலோரி தெரியாவிட்டால் மட்டும் தோராயமாக போடவும். அல்லது 'உணவு' tab-ல் தேடவும்.
+    </div>
+    <button onclick="addFoodFromModal()" style="width:100%;background:var(--forest);color:#fff;border:none;padding:14px;border-radius:var(--radius-sm);font-size:15px;font-weight:600;cursor:pointer;">
+      ✓ பட்டியலில் சேர்க்க
+    </button>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let state = {
+  profile: null,
+  today: {
+    foods: [],
+    waterCups: 0,
+    fastStart: null,
+    fastActive: false,
+    fastElapsed: 0,
+    weight: null,
+  },
+  history: [],
+  streak: 0,
+  settings: { water: true, meal: true, fast: true, weight: false, night: true }
+};
+
+// ── FOOD DATABASE (Indian) ──
+const FOOD_DB = [
+  // Breakfast
+  { name: 'இட்லி', icon: '🫓', cal: 39, prot: 2, carb: 8, fat: 0.4, unit: '1 piece', cat: 'காலை சாப்பாடு' },
+  { name: 'தோசை', icon: '🥞', cal: 133, prot: 3, carb: 25, fat: 3, unit: '1 piece', cat: 'காலை சாப்பாடு' },
+  { name: 'உப்மா', icon: '🥣', cal: 190, prot: 4, carb: 35, fat: 5, unit: '1 கப்', cat: 'காலை சாப்பாடு' },
+  { name: 'பொங்கல்', icon: '🍚', cal: 180, prot: 5, carb: 32, fat: 4, unit: '1 கப்', cat: 'காலை சாப்பாடு' },
+  { name: 'இட்லி + சாம்பார்', icon: '🍛', cal: 180, prot: 7, carb: 30, fat: 2, unit: '2 idli', cat: 'காலை சாப்பாடு' },
+  // Main meals
+  { name: 'சாதம்', icon: '🍚', cal: 206, prot: 4, carb: 45, fat: 0.5, unit: '1 கப்', cat: 'சாப்பாடு' },
+  { name: 'சப்பாத்தி', icon: '🫓', cal: 120, prot: 3, carb: 22, fat: 2.5, unit: '1 piece', cat: 'சாப்பாடு' },
+  { name: 'சாம்பார்', icon: '🥘', cal: 45, prot: 3, carb: 7, fat: 1, unit: '100g', cat: 'சாப்பாடு' },
+  { name: 'ரசம்', icon: '🫕', cal: 30, prot: 1, carb: 5, fat: 0.5, unit: '100ml', cat: 'சாப்பாடு' },
+  { name: 'பருப்பு', icon: '🫘', cal: 100, prot: 7, carb: 15, fat: 1, unit: '100g', cat: 'சாப்பாடு' },
+  { name: 'கீரை', icon: '🥬', cal: 25, prot: 2, carb: 3, fat: 0.4, unit: '100g', cat: 'சாப்பாடு' },
+  { name: 'வேர்க்கடலை சட்னி', icon: '🥣', cal: 80, prot: 3, carb: 6, fat: 5, unit: '2 tbsp', cat: 'சாப்பாடு' },
+  // Proteins
+  { name: 'முட்டை (வேகவைத்த)', icon: '🥚', cal: 78, prot: 6, carb: 1, fat: 5, unit: '1 piece', cat: 'புரதம்' },
+  { name: 'கோழி (வேகவைத்த)', icon: '🍗', cal: 165, prot: 31, carb: 0, fat: 3.6, unit: '100g', cat: 'புரதம்' },
+  { name: 'மீன் (வேகவைத்த)', icon: '🐟', cal: 120, prot: 22, carb: 0, fat: 3, unit: '100g', cat: 'புரதம்' },
+  { name: 'பனீர்', icon: '🧀', cal: 265, prot: 18, carb: 3, fat: 20, unit: '100g', cat: 'புரதம்' },
+  { name: 'தயிர்', icon: '🫙', cal: 60, prot: 4, carb: 7, fat: 1.5, unit: '100g', cat: 'புரதம்' },
+  // Fruits
+  { name: 'வாழைப்பழம்', icon: '🍌', cal: 89, prot: 1, carb: 23, fat: 0.3, unit: '1 piece', cat: 'பழங்கள்' },
+  { name: 'ஆப்பிள்', icon: '🍎', cal: 52, prot: 0.3, carb: 14, fat: 0.2, unit: '1 piece', cat: 'பழங்கள்' },
+  { name: 'மாம்பழம்', icon: '🥭', cal: 60, prot: 0.8, carb: 15, fat: 0.4, unit: '100g', cat: 'பழங்கள்' },
+  { name: 'தர்பூசணி', icon: '🍉', cal: 30, prot: 0.6, carb: 8, fat: 0.2, unit: '100g', cat: 'பழங்கள்' },
+  // Snacks
+  { name: 'கடலை', icon: '🥜', cal: 567, prot: 26, carb: 16, fat: 49, unit: '100g', cat: 'சிற்றுண்டி' },
+  { name: 'பிஸ்கட் (marie)', icon: '🍪', cal: 60, prot: 1, carb: 12, fat: 1.5, unit: '3 pieces', cat: 'சிற்றுண்டி' },
+  { name: 'சமோசா', icon: '🥟', cal: 170, prot: 3, carb: 24, fat: 8, unit: '1 piece', cat: 'சிற்றுண்டி' },
+  // Drinks
+  { name: 'காபி (பால் + சர்க்கரை)', icon: '☕', cal: 60, prot: 2, carb: 10, fat: 2, unit: '1 கப்', cat: 'பானங்கள்' },
+  { name: 'டீ (பால் + சர்க்கரை)', icon: '🍵', cal: 45, prot: 1, carb: 8, fat: 1.5, unit: '1 கப்', cat: 'பானங்கள்' },
+  { name: 'பால்', icon: '🥛', cal: 61, prot: 3.4, carb: 5, fat: 3.3, unit: '100ml', cat: 'பானங்கள்' },
+  { name: 'இளநீர்', icon: '🥥', cal: 19, prot: 0.7, carb: 3.7, fat: 0.2, unit: '100ml', cat: 'பானங்கள்' },
+];
+
+const FOOD_EMOJIS = ['🥘','🍛','🍚','🥗','🫕','🍽','🥙','🫓','🍜','🥣'];
+
+// ── SETUP ──
+let selectedGoal = 'loss', selectedFast = '16:8';
+
+function selectGoal(el) {
+  document.querySelectorAll('[data-goal]').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  selectedGoal = el.dataset.goal;
+}
+
+function selectFast(el) {
+  document.querySelectorAll('[data-fast]').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  selectedFast = el.dataset.fast;
+}
+
+function showSetup() {
+  const saved = localStorage.getItem('dietdaily_profile');
+  if (saved) {
+    state.profile = JSON.parse(saved);
+    loadSavedData();
+    document.getElementById('splash').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    initApp();
+    return;
+  }
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('setup-screen').style.display = 'block';
+}
+
+function calcBMR(p) {
+  if (p.gender === 'male') {
+    return 10 * p.weight + 6.25 * p.height - 5 * p.age + 5;
+  }
+  return 10 * p.weight + 6.25 * p.height - 5 * p.age - 161;
+}
+
+function saveSetup() {
+  const name = document.getElementById('s-name').value || 'நண்பர்';
+  const age = parseFloat(document.getElementById('s-age').value) || 48;
+  const height = parseFloat(document.getElementById('s-height').value) || 170;
+  const weight = parseFloat(document.getElementById('s-weight').value) || 80;
+  const goalWeight = parseFloat(document.getElementById('s-goal-weight').value) || 72;
+  const gender = document.getElementById('s-gender').value;
+  const activity = parseFloat(document.getElementById('s-activity').value);
+
+  const bmr = calcBMR({ gender, weight, height, age });
+  const tdee = Math.round(bmr * activity);
+  let calGoal = tdee;
+  if (selectedGoal === 'loss') calGoal = Math.round(tdee * 0.8);
+  if (selectedGoal === 'gain') calGoal = Math.round(tdee * 1.1);
+
+  const fastHours = selectedFast === 'none' ? 0 :
+    selectedFast === '16:8' ? 16 :
+    selectedFast === '18:6' ? 18 : 20;
+
+  state.profile = { name, age, height, weight, goalWeight, gender, activity, goal: selectedGoal, fastHours, calGoal, tdee, bmr: Math.round(bmr) };
+  localStorage.setItem('dietdaily_profile', JSON.stringify(state.profile));
+
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  initApp();
+}
+
+// ── INIT ──
+function loadSavedData() {
+  const todayKey = getTodayKey();
+  const saved = localStorage.getItem('dietdaily_' + todayKey);
+  if (saved) { state.today = JSON.parse(saved); }
+  const hist = localStorage.getItem('dietdaily_history');
+  if (hist) { state.history = JSON.parse(hist); }
+}
+
+function getTodayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function saveTodayData() {
+  localStorage.setItem('dietdaily_' + getTodayKey(), JSON.stringify(state.today));
+}
+
+function initApp() {
+  loadSavedData();
+  const p = state.profile;
+
+  // Date
+  const now = new Date();
+  const days = ['ஞாயிறு','திங்கள்','செவ்வாய்','புதன்','வியாழன்','வெள்ளி','சனி'];
+  const months = ['ஜனவரி','பிப்ரவரி','மார்ச்','ஏப்ரல்','மே','ஜூன்','ஜூலை','ஆகஸ்ட்','செப்டம்பர்','அக்டோபர்','நவம்பர்','டிசம்பர்'];
+  document.getElementById('disp-date').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('disp-name').textContent = p.name;
+  document.getElementById('disp-goal-cal').textContent = p.calGoal;
+
+  // Streak
+  const streak = parseInt(localStorage.getItem('dietdaily_streak') || '0');
+  state.streak = streak;
+  document.getElementById('disp-streak').innerHTML = `🔥 ${streak} நாட்கள்`;
+
+  // BMI
+  const bmi = (p.weight / ((p.height/100) ** 2)).toFixed(1);
+  document.getElementById('ins-bmi').textContent = bmi;
+  document.getElementById('ins-burned').textContent = Math.round(p.tdee) + ' kcal';
+  const defPer = Math.round(p.tdee - p.calGoal);
+  document.getElementById('ins-deficit').textContent = defPer + ' kcal';
+  const daysLeft = Math.ceil((p.weight - p.goalWeight) * 7700 / Math.max(defPer, 1));
+  document.getElementById('ins-days').textContent = daysLeft > 0 ? daysLeft + ' நாட்கள்' : '✓ அடைந்தோம்!';
+
+  // Fast type display
+  const fastLabel = p.fastHours > 0 ? `${p.fastHours}:${24-p.fastHours} விரதம்` : 'விரதம் இல்லை';
+  document.getElementById('fast-type-disp').textContent = fastLabel;
+
+  // Settings page
+  const ew = document.getElementById('edit-weight');
+  if (ew) { ew.value = p.weight; }
+  const ec = document.getElementById('edit-cal-goal');
+  if (ec) { ec.value = p.calGoal; }
+  const ef = document.getElementById('edit-fast');
+  if (ef) { ef.value = p.fastHours; }
+
+  buildQuickFoods();
+  buildFoodCategories();
+  updateFoodLog();
+  buildWaterCups();
+  updateGoals();
+  updateTomorrow();
+  renderHistory();
+  updateCalc();
+  initWeightChart();
+  startFastTimerLoop();
+}
+
+// ── FOOD LOG ──
+function openFoodModal() {
+  const input = document.getElementById('food-input').value.trim();
+  if (input) {
+    document.getElementById('modal-food-name').value = input;
+    const found = FOOD_DB.find(f => f.name.includes(input) || input.includes(f.name.substring(0,3)));
+    if (found) {
+      document.getElementById('modal-cal').value = found.cal;
+      document.getElementById('modal-prot').value = found.prot;
+      document.getElementById('modal-carb').value = found.carb;
+      document.getElementById('modal-fat').value = found.fat;
+      document.getElementById('modal-qty').value = found.unit;
+    }
+  }
+  document.getElementById('food-modal').classList.add('open');
+}
+
+function closeFoodModal() {
+  document.getElementById('food-modal').classList.remove('open');
+  document.getElementById('food-input').value = '';
+}
+
+function addFoodFromModal() {
+  const name = document.getElementById('modal-food-name').value.trim();
+  const cal = parseFloat(document.getElementById('modal-cal').value) || 0;
+  const prot = parseFloat(document.getElementById('modal-prot').value) || 0;
+  const carb = parseFloat(document.getElementById('modal-carb').value) || 0;
+  const fat = parseFloat(document.getElementById('modal-fat').value) || 0;
+  const qty = document.getElementById('modal-qty').value || '1 serving';
+
+  if (!name) { showToast('உணவு பெயர் உள்ளிடவும்!'); return; }
+
+  const food = { name, cal, prot, carb, fat, qty, time: new Date().toLocaleTimeString('ta-IN', {hour:'2-digit',minute:'2-digit'}), icon: FOOD_EMOJIS[Math.floor(Math.random() * FOOD_EMOJIS.length)] };
+  state.today.foods.push(food);
+  saveTodayData();
+  updateFoodLog();
+  updateGoals();
+  updateCalRing();
+  checkMilestones();
+  closeFoodModal();
+  showToast('✓ ' + name + ' சேர்க்கப்பட்டது!');
+}
+
+function addQuickFood(idx) {
+  const f = FOOD_DB[idx];
+  const food = { name: f.name, cal: f.cal, prot: f.prot, carb: f.carb, fat: f.fat, qty: f.unit, time: new Date().toLocaleTimeString('ta-IN',{hour:'2-digit',minute:'2-digit'}), icon: f.icon };
+  state.today.foods.push(food);
+  saveTodayData();
+  updateFoodLog();
+  updateGoals();
+  updateCalRing();
+  showToast('✓ ' + f.name + ' சேர்க்கப்பட்டது!');
+}
+
+function removeFood(idx) {
+  state.today.foods.splice(idx, 1);
+  saveTodayData();
+  updateFoodLog();
+  updateGoals();
+  updateCalRing();
+}
+
+function updateFoodLog() {
+  const el = document.getElementById('food-log');
+  if (!state.today.foods.length) {
+    el.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text-light);font-size:13px;"><div style="font-size:36px;margin-bottom:8px;">🥘</div>இன்னும் எதுவும் சேர்க்கவில்லை.<br>மேலே + அழுத்தி தொடங்குங்கள்!</div>`;
+    return;
+  }
+  el.innerHTML = state.today.foods.map((f, i) => `
+    <div class="food-item">
+      <div class="food-icon">${f.icon}</div>
+      <div class="food-info">
+        <div class="food-name">${f.name}</div>
+        <div class="food-meta">${f.qty} · ${f.time} · P:${f.prot}g C:${f.carb}g F:${f.fat}g</div>
+      </div>
+      <div class="food-cal">${Math.round(f.cal)} kcal</div>
+      <button class="food-del" onclick="removeFood(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function getTotals() {
+  return state.today.foods.reduce((a, f) => ({
+    cal: a.cal + f.cal, prot: a.prot + f.prot,
+    carb: a.carb + f.carb, fat: a.fat + f.fat
+  }), { cal: 0, prot: 0, carb: 0, fat: 0 });
+}
+
+function updateCalRing() {
+  const t = getTotals();
+  const p = state.profile;
+  if (!p) return;
+  const pct = Math.min(t.cal / p.calGoal, 1);
+  const circum = 2 * Math.PI * 46;
+  document.getElementById('cal-ring-circle').style.strokeDashoffset = circum * (1 - pct);
+  document.getElementById('disp-eaten').textContent = Math.round(t.cal);
+  document.getElementById('ring-pct').textContent = Math.round(pct * 100) + '%';
+  document.getElementById('disp-prot').textContent = Math.round(t.prot) + 'g';
+  document.getElementById('disp-carb').textContent = Math.round(t.carb) + 'g';
+  document.getElementById('disp-fat').textContent = Math.round(t.fat) + 'g';
+}
+
+// ── WATER ──
+function buildWaterCups() {
+  const el = document.getElementById('water-cups');
+  el.innerHTML = '';
+  for (let i = 0; i < 10; i++) {
+    const cup = document.createElement('div');
+    cup.className = 'water-cup' + (i < state.today.waterCups ? ' filled' : '');
+    cup.textContent = i < state.today.waterCups ? '💧' : '⬜';
+    cup.onclick = () => toggleWaterCup(i);
+    el.appendChild(cup);
+  }
+  const ml = state.today.waterCups * 250;
+  document.getElementById('water-ml-disp').textContent = `${ml} / 2500 ml`;
+  document.getElementById('g-water-pct').textContent = Math.round((state.today.waterCups / 10) * 100) + '%';
+  document.getElementById('g-water-bar').style.width = Math.min(state.today.waterCups / 10, 1) * 100 + '%';
+}
+
+function toggleWaterCup(i) {
+  if (i < state.today.waterCups) {
+    state.today.waterCups = i;
+  } else {
+    state.today.waterCups = i + 1;
+  }
+  saveTodayData();
+  buildWaterCups();
+  if (state.today.waterCups === 10) showToast('🎉 தினசரி நீர் இலக்கை அடைந்தீர்கள்!');
+}
+
+// ── FASTING ──
+let fastInterval = null;
+
+function toggleFast() {
+  if (state.today.fastActive) {
+    state.today.fastActive = false;
+    clearInterval(fastInterval);
+    document.getElementById('fast-start-btn').textContent = '▶ விரதம் தொடங்கு';
+    document.getElementById('fast-status-badge').textContent = 'நிறுத்தம்';
+    showToast('விரதம் நிறுத்தப்பட்டது');
+  } else {
+    if (!state.today.fastStart) { state.today.fastStart = Date.now(); }
+    state.today.fastActive = true;
+    document.getElementById('fast-start-btn').textContent = '⏸ நிறுத்து';
+    document.getElementById('fast-status-badge').textContent = 'விரதம் நடக்கிறது';
+    startFastTimerLoop();
+  }
+  saveTodayData();
+}
+
+function breakFast() {
+  state.today.fastActive = false;
+  state.today.fastStart = null;
+  state.today.fastElapsed = 0;
+  clearInterval(fastInterval);
+  document.getElementById('fast-start-btn').textContent = '▶ விரதம் தொடங்கு';
+  document.getElementById('fast-status-badge').textContent = 'நிறுத்தம்';
+  document.getElementById('fast-timer-disp').textContent = '00:00:00';
+  document.getElementById('fast-bar').style.width = '0%';
+  document.getElementById('fast-sublabel').textContent = 'சாப்பிட்டீர்கள்! அடுத்த விரதம் தொடங்குங்கள்';
+  saveTodayData();
+  showToast('🍽 விரதம் முடிந்தது! நல்லது!');
+}
+
+function startFastTimerLoop() {
+  clearInterval(fastInterval);
+  if (!state.today.fastActive) {
+    updateFastDisplay(state.today.fastElapsed || 0);
+    return;
+  }
+  fastInterval = setInterval(() => {
+    const elapsed = state.today.fastStart ? Math.floor((Date.now() - state.today.fastStart) / 1000) + (state.today.fastElapsed || 0) : 0;
+    updateFastDisplay(elapsed);
+    const targetHours = state.profile ? state.profile.fastHours : 16;
+    if (targetHours > 0 && elapsed >= targetHours * 3600) {
+      document.getElementById('fast-status-badge').textContent = '✓ இலக்கு!';
+      document.getElementById('fast-status-badge').style.background = 'rgba(109,184,109,0.2)';
+      document.getElementById('fast-status-badge').style.color = '#6DB86D';
+    }
+  }, 1000);
+}
+
+function updateFastDisplay(sec) {
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+  document.getElementById('fast-timer-disp').textContent =
+    String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  const target = (state.profile ? state.profile.fastHours : 16) * 3600;
+  const pct = target > 0 ? Math.min(sec / target, 1) * 100 : 0;
+  document.getElementById('fast-bar').style.width = pct + '%';
+  const remaining = Math.max(target - sec, 0);
+  const rh = Math.floor(remaining / 3600), rm = Math.floor((remaining % 3600) / 60);
+  if (state.today.fastActive && remaining > 0) {
+    document.getElementById('fast-sublabel').textContent = `மேலும் ${rh}:${String(rm).padStart(2,'0')} மணி நேரம் மீதம்`;
+  } else if (!state.today.fastActive) {
+    document.getElementById('fast-sublabel').textContent = 'சாப்பிடாத நேரம்';
+  }
+  document.getElementById('g-fast-pct').textContent = Math.round(pct) + '%';
+  document.getElementById('g-fast-bar').style.width = Math.min(pct, 100) + '%';
+}
+
+// ── WEIGHT ──
+function saveWeight() {
+  const val = parseFloat(document.getElementById('weight-input').value);
+  if (!val) { showToast('எடையை உள்ளிடவும்!'); return; }
+  const prev = state.today.weight;
+  state.today.weight = val;
+  state.profile.weight = val;
+  localStorage.setItem('dietdaily_profile', JSON.stringify(state.profile));
+  saveTodayData();
+  const diff = prev ? (val - prev).toFixed(1) : null;
+  const diffEl = document.getElementById('wt-diff');
+  if (diff !== null) {
+    diffEl.textContent = (diff > 0 ? '▲ +' : '▼ ') + diff + ' kg';
+    diffEl.className = 'wt-diff ' + (diff > 0 ? 'up' : 'down');
+  }
+  updateGoals();
+  showToast('✓ எடை ' + val + ' kg சேமிக்கப்பட்டது');
+}
+
+let weightChartCanvas = null;
+function initWeightChart() {
+  weightChartCanvas = document.getElementById('weight-chart');
+  drawWeightChart();
+}
+
+function drawWeightChart() {
+  const canvas = weightChartCanvas;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.offsetWidth || 300, h = 80;
+  canvas.width = w; canvas.height = h;
+  ctx.clearRect(0, 0, w, h);
+
+  const hist = state.history.slice(-7).filter(d => d.weight);
+  if (hist.length < 2) {
+    ctx.fillStyle = '#ccc'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('எடை பதிவுகள் குறைவு', w/2, h/2);
+    return;
+  }
+  const weights = hist.map(d => d.weight);
+  const mn = Math.min(...weights) - 0.5, mx = Math.max(...weights) + 0.5;
+  const scaleY = v => h - 16 - ((v - mn) / (mx - mn)) * (h - 32);
+  const scaleX = i => 20 + (i / (hist.length - 1)) * (w - 40);
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#2D5A2D'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+  hist.forEach((d, i) => {
+    if (i === 0) ctx.moveTo(scaleX(i), scaleY(d.weight));
+    else ctx.lineTo(scaleX(i), scaleY(d.weight));
+  });
+  ctx.stroke();
+  hist.forEach((d, i) => {
+    ctx.beginPath(); ctx.arc(scaleX(i), scaleY(d.weight), 4, 0, 2*Math.PI);
+    ctx.fillStyle = '#2D5A2D'; ctx.fill();
+    ctx.fillStyle = '#444'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(d.weight, scaleX(i), scaleY(d.weight) - 8);
+  });
+}
+
+// ── QUICK FOODS ──
+function buildQuickFoods() {
+  const popular = FOOD_DB.slice(0, 10);
+  const el = document.getElementById('quick-foods-list');
+  el.innerHTML = popular.map((f, i) => `
+    <div class="qfood" onclick="addQuickFood(${FOOD_DB.indexOf(f)})">
+      <span class="qf-icon">${f.icon}</span>
+      <div class="qf-name">${f.name}</div>
+      <div class="qf-cal">${f.cal} kcal</div>
+    </div>
+  `).join('');
+}
+
+// ── FOOD CATEGORIES ──
+function buildFoodCategories() {
+  const cats = [...new Set(FOOD_DB.map(f => f.cat))];
+  const el = document.getElementById('food-categories');
+  el.innerHTML = cats.map(cat => `
+    <div style="margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:600;color:var(--text-light);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">${cat}</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        ${FOOD_DB.filter(f => f.cat === cat).map((f,_) => `
+          <div style="background:var(--white);border-radius:var(--radius-sm);padding:12px 16px;border:1px solid var(--border);display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="addFoodFromDB('${f.name}',${f.cal},${f.prot},${f.carb},${f.fat},'${f.unit}','${f.icon}')">
+            <span style="font-size:24px;">${f.icon}</span>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:600;color:var(--text-dark);">${f.name}</div>
+              <div style="font-size:12px;color:var(--text-light);">${f.unit} · P:${f.prot}g C:${f.carb}g F:${f.fat}g</div>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:var(--terracotta);">${f.cal} kcal</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function addFoodFromDB(name, cal, prot, carb, fat, unit, icon) {
+  const food = { name, cal, prot, carb, fat, qty: unit, time: new Date().toLocaleTimeString('ta-IN',{hour:'2-digit',minute:'2-digit'}), icon };
+  state.today.foods.push(food);
+  saveTodayData();
+  updateFoodLog();
+  updateGoals();
+  updateCalRing();
+  showPage('home', document.querySelectorAll('.tab')[0]);
+  showToast('✓ ' + name + ' சேர்க்கப்பட்டது!');
+}
+
+// ── SEARCH ──
+function searchFoods(q) {
+  const el = document.getElementById('search-results');
+  if (!q.trim()) { el.innerHTML = ''; return; }
+  const results = FOOD_DB.filter(f => f.name.toLowerCase().includes(q.toLowerCase()) || f.cat.includes(q));
+  if (!results.length) { el.innerHTML = `<div style="text-align:center;padding:16px;color:var(--text-light);font-size:13px;">🔍 "${q}" கண்டுபிடிக்கவில்லை</div>`; return; }
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">${results.map(f => `
+    <div style="background:var(--white);border-radius:var(--radius-sm);padding:12px 16px;border:1px solid var(--border);display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="addFoodFromDB('${f.name}',${f.cal},${f.prot},${f.carb},${f.fat},'${f.unit}','${f.icon}')">
+      <span style="font-size:24px;">${f.icon}</span>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:600;color:var(--text-dark);">${f.name}</div>
+        <div style="font-size:12px;color:var(--text-light);">${f.unit} · ${f.cal} kcal</div>
+      </div>
+      <button style="background:var(--saffron);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;">+ சேர்</button>
+    </div>
+  `).join('')}</div>`;
+}
+
+// ── CALC ──
+function updateCalc() {
+  const sel = document.getElementById('calc-food');
+  const qty = parseFloat(document.getElementById('calc-qty').value) || 1;
+  if (!sel) return;
+  const [_, calPer] = sel.value.split(':');
+  const total = Math.round(parseFloat(calPer) * qty);
+  const el = document.getElementById('calc-result');
+  if (el) el.textContent = total;
+}
+
+function addCalcFood() {
+  const sel = document.getElementById('calc-food');
+  const qty = parseFloat(document.getElementById('calc-qty').value) || 1;
+  const [name, calPer] = sel.value.split(':');
+  const cal = Math.round(parseFloat(calPer) * qty);
+  const found = FOOD_DB.find(f => f.name === sel.options[sel.selectedIndex].text.split(' (')[0]) || {};
+  const food = { name: sel.options[sel.selectedIndex].text, cal, prot: Math.round((found.prot || 0) * qty), carb: Math.round((found.carb || 0) * qty), fat: Math.round((found.fat || 0) * qty), qty: qty + ' serving', time: new Date().toLocaleTimeString('ta-IN',{hour:'2-digit',minute:'2-digit'}), icon: found.icon || '🍽' };
+  state.today.foods.push(food);
+  saveTodayData();
+  updateFoodLog();
+  updateGoals();
+  updateCalRing();
+  showToast('✓ ' + food.name + ' சேர்க்கப்பட்டது!');
+}
+
+// ── GOALS ──
+function updateGoals() {
+  if (!state.profile) return;
+  const p = state.profile;
+  const t = getTotals();
+  updateCalRing();
+  const calPct = Math.min(Math.round((t.cal / p.calGoal) * 100), 150);
+  document.getElementById('g-cal-pct').textContent = calPct + '%';
+  document.getElementById('g-cal-bar').style.width = Math.min(calPct, 100) + '%';
+
+  const protGoal = Math.round(p.weight * 1.2);
+  const protPct = Math.min(Math.round((t.prot / protGoal) * 100), 100);
+  document.getElementById('g-prot-pct').textContent = protPct + '%';
+  document.getElementById('g-prot-bar').style.width = protPct + '%';
+
+  const wtPct = p.goalWeight < p.weight ?
+    Math.min(Math.round(((p.weight - (state.today.weight || p.weight)) / Math.max(p.weight - p.goalWeight, 0.1)) * 100 + 50), 100) :
+    100;
+  const realWtPct = state.today.weight ? Math.min(Math.round(Math.abs(state.today.weight - p.goalWeight) < 0.5 ? 100 : 50), 100) : 0;
+  document.getElementById('g-weight-pct').textContent = realWtPct + '%';
+  document.getElementById('g-weight-bar').style.width = realWtPct + '%';
+
+  updateTomorrow();
+}
+
+// ── TOMORROW ──
+function updateTomorrow() {
+  const p = state.profile;
+  if (!p) return;
+  const t = getTotals();
+  const diff = Math.round(t.cal - p.calGoal);
+  const tmrGoal = diff > 200 ? Math.round(p.calGoal * 0.85) : diff < -200 ? Math.round(p.calGoal * 1.1) : p.calGoal;
+
+  document.getElementById('tmr-cal-goal').textContent = tmrGoal + ' kcal';
+
+  let fastHours = p.fastHours;
+  let window = 24 - fastHours;
+  document.getElementById('tmr-fast-window').textContent = fastHours > 0 ? `${fastHours} மணி விரதம் | ${window} மணி சாப்பாடு` : 'விரதம் இல்லை';
+
+  const now = new Date();
+  const firstMealHour = fastHours > 0 ? (now.getHours() < 10 ? 8 : now.getHours() + 1) : 7;
+  const lastMealHour = firstMealHour + window - 1;
+  document.getElementById('tmr-first-meal').textContent = `${firstMealHour}:00 மணி`;
+  document.getElementById('tmr-last-meal').textContent = `${lastMealHour > 23 ? lastMealHour - 24 : lastMealHour}:00 மணி`;
+
+  const weightChange = (diff / 7700).toFixed(2);
+  const wtSign = weightChange > 0 ? '+' : '';
+  document.getElementById('tmr-weight-change').textContent = `${wtSign}${weightChange} kg`;
+
+  // Tomorrow meal suggestions
+  const mealEl = document.getElementById('tomorrow-meals');
+  const meals = [
+    { time: 'காலை', icon: '🌅', foods: 'இட்லி + சாம்பார் + தட்டு (250 kcal)' },
+    { time: 'மதியம்', icon: '☀️', foods: 'சாதம் + பருப்பு + கீரை (450 kcal)' },
+    { time: 'மாலை', icon: '🌆', foods: 'பழம் + தயிர் (150 kcal)' },
+    { time: 'இரவு', icon: '🌙', foods: 'சப்பாத்தி + வேர்க்கடலை சட்னி (350 kcal)' },
+  ];
+  mealEl.innerHTML = meals.map(m => `
+    <div class="plan-item">
+      <span class="pi-icon">${m.icon}</span>
+      <div class="pi-name">${m.time}</div>
+      <div class="pi-cal" style="font-size:11px;color:var(--text-mid);margin-top:4px;">${m.foods}</div>
+    </div>
+  `).join('');
+}
+
+// ── HISTORY ──
+function renderHistory() {
+  const el = document.getElementById('history-content');
+  const allKeys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('dietdaily_2')) allKeys.push(k.replace('dietdaily_', ''));
+  }
+  if (!allKeys.length) return;
+  allKeys.sort().reverse();
+  el.innerHTML = allKeys.slice(0, 14).map(dateKey => {
+    const data = JSON.parse(localStorage.getItem('dietdaily_' + dateKey) || '{}');
+    const foods = data.foods || [];
+    const total = foods.reduce((a, f) => a + f.cal, 0);
+    const p = state.profile;
+    const status = !p ? 'good' : total > p.calGoal * 1.1 ? 'over' : total < p.calGoal * 0.7 ? 'under' : 'good';
+    const labels = { over: 'அதிகமாக சாப்பிட்டீர்கள்', under: 'குறைவாக சாப்பிட்டீர்கள்', good: 'சரியான அளவு!' };
+    const date = new Date(dateKey);
+    const dayNames = ['ஞா','திங','செவ','புத','வியா','வெள்','சன'];
+    const monthNames = ['ஜன','பிப்','மார்','ஏப்','மே','ஜூன்','ஜூல்','ஆக','செப்','அக்','நவ','டிச'];
+    return `
+      <div class="hist-day">
+        <div class="hist-date">${dayNames[date.getDay()]}, ${date.getDate()} ${monthNames[date.getMonth()]}</div>
+        <div class="hist-summary">
+          <div>
+            <div class="hist-cal-label">மொத்த கலோரி</div>
+            <div class="hist-cal-val ${status}">${Math.round(total)} kcal</div>
+            <div style="font-size:11px;color:var(--text-light);margin-top:2px;">${labels[status]}</div>
+          </div>
+          <div>
+            ${data.fastActive ? '<span class="hist-badge fast">⏳ விரதம்</span>' : ''}
+            ${(data.waterCups || 0) >= 10 ? '<span class="hist-badge vrat">💧 நீர் ✓</span>' : ''}
+            <div style="font-size:12px;color:var(--text-light);margin-top:4px;">${foods.length} உணவு</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── COACH ──
+function askCoach() {
+  const q = document.getElementById('coach-input').value.trim();
+  if (!q) return;
+  const p = state.profile;
+  const t = getTotals();
+  const msgs = {
+    'விரதம்': `உங்கள் ${p?.fastHours || 16} மணி நேர விரதம் மிகவும் நல்லது! கடைசியாக சாப்பிட்ட நேரத்திலிருந்து ${p?.fastHours || 16} மணி நேரம் கழித்து சாப்பிடலாம். தண்ணீர், கறுப்பு காபி விரதத்தை உடைக்காது.`,
+    'கலோரி': `இன்று ${Math.round(t.cal)} kcal சாப்பிட்டீர்கள். உங்கள் இலக்கு ${p?.calGoal || 2000} kcal. ${t.cal > (p?.calGoal || 2000) ? '⚠️ கொஞ்சம் அதிகமாகிவிட்டது! நாளை கொஞ்சம் குறைத்துக்கொள்ளுங்கள்.' : '✅ நல்லது! இலக்குக்குள் இருக்கிறீர்கள்.'}`,
+    'எடை': `BMI: ${p ? (p.weight / ((p.height/100)**2)).toFixed(1) : '—'}. இலக்கு எடை ${p?.goalWeight || '—'} kg. ${p ? Math.ceil((p.weight - p.goalWeight) * 7700 / Math.max(p.tdee - p.calGoal, 200)) : '—'} நாட்களில் அடையலாம்!`,
+    'நீர்': `இன்று ${state.today.waterCups * 250}ml நீர் குடித்தீர்கள். தினசரி குறைந்தது 2500ml (10 குவளை) குடிக்கவும். காலை எழுந்தவுடன் 2 குவளை குடிக்கவும்.`,
+    'default': `இன்று ${Math.round(t.cal)} kcal சாப்பிட்டீர்கள். ${p?.fastHours ? `${p.fastHours} மணி நேர விரதம் கடைப்பிடிக்கவும்.` : ''} தினமும் 2500ml நீர், 7-8 மணி நேரம் தூக்கம் உடல் ஆரோக்கியத்திற்கு அவசியம்! 💪`
+  };
+  let reply = msgs['default'];
+  if (q.includes('விரதம') || q.includes('fasting') || q.includes('fast')) reply = msgs['விரதம்'];
+  else if (q.includes('கலோரி') || q.includes('calorie') || q.includes('calories')) reply = msgs['கலோரி'];
+  else if (q.includes('எடை') || q.includes('weight')) reply = msgs['எடை'];
+  else if (q.includes('நீர்') || q.includes('water') || q.includes('தண்ணீர்')) reply = msgs['நீர்'];
+
+  document.getElementById('coach-message').textContent = reply;
+  document.getElementById('coach-input').value = '';
+}
+
+// ── MILESTONES ──
+function checkMilestones() {
+  const t = getTotals();
+  const p = state.profile;
+  if (!p) return;
+  if (t.cal > p.calGoal * 1.2) {
+    setTimeout(() => showToast('⚠️ கலோரி அதிகமாகிவிட்டது! நாளை கவனமாக இருங்கள்'), 500);
+  }
+}
+
+// ── NOTIFICATIONS ──
+function toggleNotif(btn) {
+  btn.classList.toggle('on');
+  const key = btn.id.replace('t-', '');
+  if (state.settings) state.settings[key] = btn.classList.contains('on');
+}
+
+// ── SETTINGS SAVE ──
+function saveSettings() {
+  const ew = parseFloat(document.getElementById('edit-weight').value);
+  const ec = parseInt(document.getElementById('edit-cal-goal').value);
+  const ef = parseInt(document.getElementById('edit-fast').value);
+  if (ew) state.profile.weight = ew;
+  if (ec) state.profile.calGoal = ec;
+  if (!isNaN(ef)) state.profile.fastHours = ef;
+  localStorage.setItem('dietdaily_profile', JSON.stringify(state.profile));
+  updateGoals();
+  showToast('✓ அமைப்புகள் சேமிக்கப்பட்டன');
+}
+
+// ── PAGES ──
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'plan') { updateGoals(); drawWeightChart(); }
+  if (name === 'hist') renderHistory();
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── STREAK ──
+function updateStreak() {
+  const lastDate = localStorage.getItem('dietdaily_last_log');
+  const today = getTodayKey();
+  if (lastDate !== today && state.today.foods.length > 0) {
+    localStorage.setItem('dietdaily_last_log', today);
+    const streak = parseInt(localStorage.getItem('dietdaily_streak') || '0');
+    localStorage.setItem('dietdaily_streak', streak + 1);
+    document.getElementById('disp-streak').innerHTML = `🔥 ${streak + 1} நாட்கள்`;
+  }
+}
+
+// ── AUTO SAVE ──
+setInterval(() => { if (state.today.foods.length > 0) { saveTodayData(); updateStreak(); } }, 30000);
+
+// ── BOOT ──
+const savedProfile = localStorage.getItem('dietdaily_profile');
+if (savedProfile) {
+  document.getElementById('splash').style.display = 'flex';
+} else {
+  document.getElementById('splash').style.display = 'flex';
+}
+</script>
+</body>
+</html>
